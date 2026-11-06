@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<uidefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://prd-use-rad-assets.azurewebsites.net/ExtensionsSchemaDefinition_v1_0.xsd">
+  <version ver="1.0"/>
+  <tile icon="#icFitness" status="{connectionStatus}" action="command:refreshStatus" navigation="show:MainPage" showinhomepage="#false" showinroompage="#true"/>
+  <layouts>
+    <layout id="MainPage">
+      <controls>
+        <subheader id="SpaStatusHeader" label="^SpaStatus"/>
+        <textdisplay id="SpaStatus" title="^SpaStatus" line1label="{connectionStatus}" line2label="{currentTemperature}" line3label="{targetTemperature}"/>
+        <controlgroup>
+          <textdisplay id="PumpStatus" title="^Pump" line1label="{pumpSpeed}" line2label="{pumpCommandStatus}"/>
+          <buttongroup>
+            <button id="PumpOff" label="^PumpOff" action="command:setPumpOff"/>
+            <button id="PumpLow" label="^PumpLow" action="command:setPumpLow"/>
+            <button id="PumpHigh" label="^PumpHigh" action="command:setPumpHigh"/>
+          </buttongroup>
+        </controlgroup>
+        <controlgroup>
+          <textdisplay id="HeatAndLight" title="^HeatAndLight" line1label="{isHeating}" line2label="{light1On}" line3label="{holdMode}"/>
+          <button id="Light1" label="^ToggleLight" action="command:toggleLight1"/>
+        </controlgroup>
+        <subheader id="TemperatureHeader" label="^TemperatureControl"/>
+        <textentry id="TargetTemperatureEntry" label="^TargetTemperature" value="$targetTemperature" numericinputonly="#true"/>
+        <subheader id="ClockHeader" label="^Clock"/>
+        <textdisplay id="ClockStatus" title="^Clock" line1label="{clockStatus}" line2label="{timeSyncStatus}" line3label="{timeZone}"/>
+        <textentry id="ManualSpaTime" label="^ManualSpaTime" value="$manualSpaTime" numericinputonly="#false"/>
+        <button id="SyncClock" label="^SyncClock" action="command:syncTime"/>
+        <button id="Refresh" label="^Refresh" action="command:refreshStatus"/>
+      </controls>
+    </layout>
+  </layouts>
+  <alerts></alerts>
+</uidefinition>
