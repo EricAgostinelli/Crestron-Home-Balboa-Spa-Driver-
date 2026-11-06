@@ -1,0 +1,71 @@
+{
+  "CrestronSerialDeviceApi": {
+    "DeviceSupport": {},
+    "DeviceSupport2": null,
+    "GeneralInformation": {
+      "DeviceType": "Pool Controller",
+      "Manufacturer": "Balboa",
+      "BaseModel": "BP Series / BWA",
+      "VersionDate": "2026-11-06 00:00:00.000",
+      "DriverVersion": "0.1.0.0",
+      "SdkVersion": "29.0000.0010",
+      "Description": "Generic RAD Pool Controller driver for Balboa BP-series controllers with BWA Wi-Fi module. The controlled body of water can be configured as a Pool or Spa.",
+      "Guid": "b3d1a6f4-5c2e-4c71-9a32-7b4f1d8c0e61",
+      "DependencyGroup": "",
+      "Developer": {
+        "Company": "Community / Custom Integration",
+        "Contact": "Driver Maintainer",
+        "Email": "",
+        "Website": "",
+        "PhoneNumber": ""
+      },
+      "SupportedSeries": [
+        "Pool Controller"
+      ],
+      "SupportedModels": [
+        "BP Series",
+        "BWA Wi-Fi"
+      ]
+    },
+    "Api": {
+      "Communication": {
+        "CommunicationType": 1,
+        "Protocol": -1,
+        "Baud": -1,
+        "Parity": -1,
+        "HwHandshake": -1,
+        "SwHandshake": -1,
+        "DataBits": 0,
+        "StopBits": -1,
+        "Port": 4257,
+        "EnableAutoPolling": false,
+        "EnableAutoReconnect": true,
+        "TimeBetweenCommands": 150,
+        "TimeBetweenCommandsOverride": 100,
+        "ResponseTimeout": 2500,
+        "WaitForResponse": false,
+        "IpProtocol": 0,
+        "IsUserAdjustable": true,
+        "Authentication": {
+          "Type": "None",
+          "Required": false
+        },
+        "IsSecure": false,
+        "UserAdjustableProperties": [
+          "EthernetAdjustablePort"
+        ],
+        "DeviceId": 0
+      },
+      "PowerWaitPeriod": {
+        "UseLocalWarmupTimer": false,
+        "WarmUpTime": 0,
+        "UseLocalCooldownTimer": false,
+        "CoolDownTime": 0
+      },
+      "StandardCommands": {},
+      "Feedback": {},
+      "CustomCommands": []
+    },
+    "UserAttributes": []
+  }
+}

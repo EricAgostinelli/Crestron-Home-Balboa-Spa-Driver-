@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalboaSpa.Protocol", "src\BalboaSpa.Protocol\BalboaSpa.Protocol.csproj", "{A4C08D1B-7B18-4E72-A99A-38A9BCF33C02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalboaSpa.Protocol.Tests", "tests\BalboaSpa.Protocol.Tests\BalboaSpa.Protocol.Tests.csproj", "{AF54D9B4-31A0-4A7D-B6A9-1E3D4EAF6D6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalboaSpa.RadDriver", "src\BalboaSpa.RadDriver\BalboaSpa.RadDriver.csproj", "{F17BFA83-72F6-49EA-A78B-19AB0A5D4A16}"
+EndProject
+Global
+  GlobalSection(SolutionConfigurationPlatforms) = preSolution
+    Debug|Any CPU = Debug|Any CPU
+    Release|Any CPU = Release|Any CPU
+  EndGlobalSection
+  GlobalSection(ProjectConfigurationPlatforms) = postSolution
+    {A4C08D1B-7B18-4E72-A99A-38A9BCF33C02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {A4C08D1B-7B18-4E72-A99A-38A9BCF33C02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {A4C08D1B-7B18-4E72-A99A-38A9BCF33C02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {A4C08D1B-7B18-4E72-A99A-38A9BCF33C02}.Release|Any CPU.Build.0 = Release|Any CPU
+    {AF54D9B4-31A0-4A7D-B6A9-1E3D4EAF6D6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {AF54D9B4-31A0-4A7D-B6A9-1E3D4EAF6D6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {AF54D9B4-31A0-4A7D-B6A9-1E3D4EAF6D6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {AF54D9B4-31A0-4A7D-B6A9-1E3D4EAF6D6B}.Release|Any CPU.Build.0 = Release|Any CPU
+    {F17BFA83-72F6-49EA-A78B-19AB0A5D4A16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+    {F17BFA83-72F6-49EA-A78B-19AB0A5D4A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+    {F17BFA83-72F6-49EA-A78B-19AB0A5D4A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+    {F17BFA83-72F6-49EA-A78B-19AB0A5D4A16}.Release|Any CPU.Build.0 = Release|Any CPU
+  EndGlobalSection
+EndGlobal
