@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Crestron.RAD.Common.BasicDriver;
 using Crestron.RAD.Common.Enums;
 using Crestron.RAD.Common.Transports;
+using Crestron.RAD.Common.Interfaces;
 using Crestron.RAD.DeviceTypes.PoolController;
 using BalboaSpa.Protocol;
 
@@ -10,8 +11,6 @@ namespace BalboaSpa.RadDriver
 {
     /// <summary>
     /// Balboa BP/BWA protocol hosted by the Crestron RAD pool-controller transport.
-    /// BWA frames are binary; they are carried through RAD's string transport API by
-    /// preserving each byte as one character (0-255), matching RAD's binary-capable transports.
     /// </summary>
     internal sealed class BalboaPoolControllerProtocol : APoolControllerProtocol
     {
@@ -24,7 +23,14 @@ namespace BalboaSpa.RadDriver
         {
         }
 
-        public void SetPool(BalboaSpaPool pool) { _pool = pool; }
+        public void ConfigurePools(BalboaSpaPool pool)
+        {
+            StartConfiguration();
+            _pool = pool;
+            Pools = new List<IPool> { pool };
+            NonPoolParts = new List<IPoolPart>();
+            CompleteConfiguration();
+        }
 
         public override void Initialize(object driverData)
         {
@@ -37,8 +43,6 @@ namespace BalboaSpa.RadDriver
 
         protected override ValidatedRxData ResponseValidator(string response, CommonCommandGroupType commandGroup)
         {
-            // Balboa is an unsolicited binary status protocol. Frame validation and CRC
-            // checking are performed in DeConstructResponse after transport chunking.
             return new ValidatedRxData(true, response);
         }
 
@@ -119,7 +123,6 @@ namespace BalboaSpa.RadDriver
             if (target < 0 || target > 2)
                 throw new ArgumentOutOfRangeException("target", "Pump speed must be 0 (off), 1 (low), or 2 (high).");
             if (_lastStatus == null) { RequestStatus(); return; }
-
             var current = _lastStatus.Pump1State;
             var presses = (target - current + 3) % 3;
             for (var i = 0; i < presses; i++)
@@ -128,6 +131,7 @@ namespace BalboaSpa.RadDriver
 
         private void ApplyStatus(BalboaSpaStatus status)
         {
+            if (_pool == null) return;
             var waterF = status.IsCelsius && status.WaterTemperature.HasValue
                 ? (status.WaterTemperature.Value * 9.0 / 5.0) + 32.0 : status.WaterTemperature;
             var setpointF = status.IsCelsius && status.SetTemperature.HasValue
