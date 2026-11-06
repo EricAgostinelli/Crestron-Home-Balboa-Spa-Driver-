@@ -1,0 +1,53 @@
+name: Balboa RAD Pool Controller CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  protocol-tests:
+    name: Protocol tests
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Test Balboa protocol layer
+        run: dotnet test tests/BalboaSpa.Protocol.Tests/BalboaSpa.Protocol.Tests.csproj --configuration Release --verbosity normal
+      - name: Validate RAD driver metadata
+        shell: pwsh
+        run: |
+          $json = Get-Content src/BalboaSpa.RadDriver/BalboaPoolController.json -Raw | ConvertFrom-Json
+          if ($json.CrestronSerialDeviceApi.GeneralInformation.DeviceType -ne 'Pool Controller') { throw 'Driver metadata is not Pool Controller.' }
+          $comm = $json.CrestronSerialDeviceApi.Api.Communication
+          if ($comm.Port -ne 4257) { throw 'Preferred/default BWA TCP port must be 4257.' }
+          if (-not $comm.IsUserAdjustable) { throw 'TCP communication must be installer-adjustable.' }
+          if ($comm.UserAdjustableProperties -notcontains 'EthernetAdjustablePort') { throw 'Installer-adjustable TCP port must include EthernetAdjustablePort.' }
+
+  rad-build:
+    name: RAD SDK build and package
+    if: ${{ vars.CRESTRON_RAD_BUILD == 'true' }}
+    runs-on: [ self-hosted, windows, crestron-sdk ]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build RAD driver with installed Crestron SDK
+        shell: pwsh
+        run: |
+          if (-not $env:CRESTRON_SDK_PATH) { throw 'Runner must define CRESTRON_SDK_PATH.' }
+          if (-not $env:CRESTRON_SIMPLSHARP_PATH) { throw 'Runner must define CRESTRON_SIMPLSHARP_PATH.' }
+          msbuild .\src\BalboaSpa.RadDriver\BalboaSpa.RadDriver.csproj /p:Configuration=Release /p:CrestronSdkPath="$env:CRESTRON_SDK_PATH" /p:CrestronSimplSharpPath="$env:CRESTRON_SIMPLSHARP_PATH"
+      - name: Generate package with ManifestUtil
+        shell: pwsh
+        run: |
+          $dllDir = Join-Path $env:GITHUB_WORKSPACE 'src\BalboaSpa.RadDriver\bin\Release\net47'
+          & (Join-Path $env:CRESTRON_SDK_PATH 'ManifestUtil\ManifestUtil.exe') $dllDir
+          Get-ChildItem $dllDir -Filter *.pkg | Out-Null
+      - name: Upload RAD build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: balboa-rad-driver-build
+          path: src/BalboaSpa.RadDriver/bin/Release/net47/*
