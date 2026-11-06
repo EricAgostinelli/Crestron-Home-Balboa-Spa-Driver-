@@ -6,37 +6,15 @@
     <LangVersion>7.3</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <Deterministic>true</Deterministic>
-    <CrestronSdkPath Condition="'$(CrestronSdkPath)' == ''">$(CRESTRON_SDK_PATH)</CrestronSdkPath>
-    <CrestronSimplSharpPath Condition="'$(CrestronSimplSharpPath)' == ''">$(CRESTRON_SIMPLSHARP_PATH)</CrestronSimplSharpPath>
   </PropertyGroup>
+
+  <!-- Crestron's SDK 29 NuGet packages supply the RAD V1 and SIMPL# references.
+       ManifestUtil runs as an MSBuild packaging target after compilation. -->
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="RADCommon">
-      <HintPath>$(CrestronSdkPath)\Libraries\RADCommon.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="RADProTransports">
-      <HintPath>$(CrestronSdkPath)\Libraries\RADProTransports.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="Crestron.DeviceDrivers.API">
-      <HintPath>$(CrestronSdkPath)\Libraries\Crestron.DeviceDrivers.API.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="SimplSharpPro">
-      <HintPath>$(CrestronSimplSharpPath)\SimplSharpPro.exe</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="SimplSharpHelperInterface">
-      <HintPath>$(CrestronSimplSharpPath)\SimplSharpHelperInterface.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="SimplSharpCustomAttributesInterface">
-      <HintPath>$(CrestronSimplSharpPath)\SimplSharpCustomAttributesInterface.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="Crestron.DeviceDrivers.DevKit" Version="29.0.10" />
+    <PackageReference Include="Crestron.DeviceDrivers.ManifestUtil" Version="29.0.10" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Include="..\BalboaSpa.Protocol\BalboaCommands.cs" Link="Protocol\BalboaCommands.cs" />
     <Compile Include="..\BalboaSpa.Protocol\BalboaConnectionOptions.cs" Link="Protocol\BalboaConnectionOptions.cs" />
@@ -46,8 +24,4 @@
     <Compile Include="..\BalboaSpa.Protocol\BalboaSpaStatus.cs" Link="Protocol\BalboaSpaStatus.cs" />
     <EmbeddedResource Include="BalboaPoolController.json" />
   </ItemGroup>
-  <Target Name="ValidateCrestronSdkPaths" BeforeTargets="ResolveReferences">
-    <Error Condition="!Exists('$(CrestronSdkPath)\Libraries\RADCommon.dll')" Text="Set CRESTRON_SDK_PATH to the extracted Crestron Drivers SDK 29 folder (the folder containing Libraries)." />
-    <Error Condition="!Exists('$(CrestronSimplSharpPath)\SimplSharpPro.exe')" Text="Set CRESTRON_SIMPLSHARP_PATH to the Crestron SDK installation folder containing SimplSharpPro.exe and helper interface DLLs." />
-  </Target>
 </Project>
