@@ -8,16 +8,12 @@
     <Deterministic>true</Deterministic>
   </PropertyGroup>
 
-  <!-- Crestron's SDK 29 NuGet packages supply the RAD V1 and SIMPL# references.
-       ManifestUtil runs as an MSBuild packaging target after compilation. -->
+  <!-- Crestron SDK packages provide RAD V1, SIMPL# references, and package generation. -->
   <ItemGroup>
-   <ItemGroup>
-  <PackageReference Include="Crestron.DeviceDrivers.DevKit" Version="29.0.10" />
-  <PackageReference Include="Crestron.DeviceDrivers.ManifestUtil" Version="29.0.10" />
-
-  <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.22.40" />
-  <PackageReference Include="Crestron.SimplSharp.SDK.ProgramLibrary" Version="2.22.40" />
-</ItemGroup>
+    <PackageReference Include="Crestron.DeviceDrivers.DevKit" Version="29.0.10" />
+    <PackageReference Include="Crestron.DeviceDrivers.ManifestUtil" Version="29.0.10" />
+    <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.22.40" />
+    <PackageReference Include="Crestron.SimplSharp.SDK.ProgramLibrary" Version="2.22.40" />
   </ItemGroup>
 
   <ItemGroup>
