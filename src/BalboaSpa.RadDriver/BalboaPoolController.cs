@@ -16,7 +16,6 @@ namespace BalboaSpa.RadDriver
 {
     /// <summary>
     /// RAD V1 Pool Controller driver for Balboa BP-series/BWA systems.
-    /// The body-of-water name and Pool/Spa classification are installer settings.
     /// </summary>
     public sealed class BalboaPoolController : ABasicPoolController, ITcp
     {
@@ -54,14 +53,12 @@ namespace BalboaSpa.RadDriver
             AddUserAttribute(UserAttributeType.Custom, "ManualClockTime", "Manual Spa Time (HH:mm)",
                 "Optional 24-hour time. Use the Set Spa Clock to Manual Time custom command to apply it.", true,
                 UserAttributeRequiredForConnectionType.None, UserAttributeDataType.String, "");
-
             UserAttributesChanged += OnUserAttributesChanged;
         }
 
         public void Initialize(IPAddress ipAddress, int port)
         {
             ApplyUserSettings();
-
             var tcp = new TcpTransport
             {
                 EnableAutoReconnect = EnableAutoReconnect,
@@ -73,26 +70,27 @@ namespace BalboaSpa.RadDriver
             tcp.Initialize(ipAddress, port);
             ConnectionTransport = tcp;
 
-            // The pool model is constructed before the protocol so all RAD parts share
-            // the same protocol instance and can issue commands through it.
             _protocol = new BalboaPoolControllerProtocol(ConnectionTransport, Id);
             _pool = new BalboaSpaPool(_protocol, _poolName, _poolType, OnPartCommand);
-            _protocol.SetPool(_pool);
+            _protocol.ConfigurePools(_pool);
             PoolControllerProtocol = _protocol;
-
-            PoolControllerData = new PoolControllerRootObject
-            {
-                Pools = new List<IPool> { _pool },
-                NonPoolParts = new List<IPoolPart>()
-            };
-
-            _protocol.StateChange += StateChange;
             _protocol.RxOut += SendRxOut;
-            _protocol.Initialize(PoolControllerData);
+            _protocol.Initialize(null);
 
             AddCustomCommand("Sync Clock Now", "SYNC_CLOCK_NOW", new List<Parameters>());
             AddCustomCommand("Set Spa Clock to Manual Time", "SET_MANUAL_CLOCK_TIME", new List<Parameters>());
             ConfigureClockTimer();
+        }
+
+        // IBasicPoolController methods are implemented as public methods, not overrides.
+        public IEnumerable<IPool> GetPools()
+        {
+            return _protocol == null ? Enumerable.Empty<IPool>() : _protocol.Pools;
+        }
+
+        public IEnumerable<IPoolPart> GetNonPoolParts()
+        {
+            return _protocol == null ? Enumerable.Empty<IPoolPart>() : _protocol.NonPoolParts;
         }
 
         public override bool SupportsDisconnect { get { return true; } }
