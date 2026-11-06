@@ -29,28 +29,28 @@ jobs:
           if ($comm.UserAdjustableProperties -notcontains 'EthernetAdjustablePort') { throw 'Installer-adjustable TCP port must include EthernetAdjustablePort.' }
 
   rad-build:
-    name: RAD SDK build and package
-    # This repository is public: never run untrusted pull-request code on the self-hosted Windows PC.
-    if: ${{ vars.CRESTRON_RAD_BUILD == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
-    runs-on: [ self-hosted, windows, crestron-sdk ]
+    name: RAD V1 SDK build and package
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build RAD driver with installed Crestron SDK
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+      - name: Restore and build RAD driver with Crestron SDK 29
         shell: pwsh
         run: |
-          if (-not $env:CRESTRON_SDK_PATH) { throw 'Runner must define CRESTRON_SDK_PATH.' }
-          if (-not $env:CRESTRON_SIMPLSHARP_PATH) { throw 'Runner must define CRESTRON_SIMPLSHARP_PATH.' }
-          msbuild .\src\BalboaSpa.RadDriver\BalboaSpa.RadDriver.csproj /p:Configuration=Release /p:CrestronSdkPath="$env:CRESTRON_SDK_PATH" /p:CrestronSimplSharpPath="$env:CRESTRON_SIMPLSHARP_PATH"
-      - name: Generate package with ManifestUtil
+          msbuild .\src\BalboaSpa.RadDriver\BalboaSpa.RadDriver.csproj /restore /p:Configuration=Release /verbosity:minimal
+      - name: Verify generated Crestron package
         shell: pwsh
         run: |
-          $dllDir = Join-Path $env:GITHUB_WORKSPACE 'src\BalboaSpa.RadDriver\bin\Release\net47'
-          & (Join-Path $env:CRESTRON_SDK_PATH 'ManifestUtil\ManifestUtil.exe') $dllDir
-          $packages = @(Get-ChildItem $dllDir -Filter *.pkg -ErrorAction SilentlyContinue)
-          if ($packages.Count -eq 0) { throw "ManifestUtil did not produce a .pkg file in $dllDir" }
+          $packages = @(Get-ChildItem .\src\BalboaSpa.RadDriver\bin -Recurse -Filter *.pkg -ErrorAction SilentlyContinue)
+          if ($packages.Count -eq 0) {
+            Get-ChildItem .\src\BalboaSpa.RadDriver\bin -Recurse | Select-Object FullName
+            throw 'Crestron ManifestUtil did not generate a .pkg file.'
+          }
           $packages | ForEach-Object { Write-Host "Package: $($_.FullName)" }
-      - name: Upload RAD build output
+      - name: Upload RAD driver package and build output
         uses: actions/upload-artifact@v4
         with:
           name: balboa-rad-driver-build
-          path: src/BalboaSpa.RadDriver/bin/Release/net47/*
+          path: src/BalboaSpa.RadDriver/bin/Release/net47/**
+          if-no-files-found: error
