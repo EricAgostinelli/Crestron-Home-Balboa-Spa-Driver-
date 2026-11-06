@@ -30,7 +30,8 @@ jobs:
 
   rad-build:
     name: RAD SDK build and package
-    if: ${{ vars.CRESTRON_RAD_BUILD == 'true' }}
+    # This repository is public: never run untrusted pull-request code on the self-hosted Windows PC.
+    if: ${{ vars.CRESTRON_RAD_BUILD == 'true' && github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
     runs-on: [ self-hosted, windows, crestron-sdk ]
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +46,9 @@ jobs:
         run: |
           $dllDir = Join-Path $env:GITHUB_WORKSPACE 'src\BalboaSpa.RadDriver\bin\Release\net47'
           & (Join-Path $env:CRESTRON_SDK_PATH 'ManifestUtil\ManifestUtil.exe') $dllDir
-          Get-ChildItem $dllDir -Filter *.pkg | Out-Null
+          $packages = @(Get-ChildItem $dllDir -Filter *.pkg -ErrorAction SilentlyContinue)
+          if ($packages.Count -eq 0) { throw "ManifestUtil did not produce a .pkg file in $dllDir" }
+          $packages | ForEach-Object { Write-Host "Package: $($_.FullName)" }
       - name: Upload RAD build output
         uses: actions/upload-artifact@v4
         with:
